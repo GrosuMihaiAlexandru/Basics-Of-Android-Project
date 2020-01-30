@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -23,19 +24,21 @@ public class MainActivity extends AppCompatActivity
 
     RequestQueue requestQueue;
 
-    private Button button;
+    private EditText searchText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
-        button = findViewById(R.id.button);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        searchText = findViewById(R.id.editText);
     }
 
     public void OnClick(View view)
     {
-        final String apiSearch = apiString + "\"hafanana\"";
+        String res = searchText.getText().toString();
+        Log.d("AAA", "Searched: " + "\"" + res + "\"");
+        final String apiSearch = apiString + res;
     
         requestQueue = Volley.newRequestQueue(this);
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
