@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity
 
     public void OnClick(View view)
     {
-        final String apiSearch = apiString + "hafanana";
+        final String apiSearch = apiString + "\"hafanana\"";
     
         requestQueue = Volley.newRequestQueue(this);
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
@@ -44,7 +44,43 @@ public class MainActivity extends AppCompatActivity
 
                             @Override
                             public void onResponse(JSONObject response) {
-                                Log.d("AAA", response.toString());
+                                // Log.d("AAA", response.toString());
+
+                                try
+                                {
+                                    JSONArray array = response.getJSONArray("data");
+
+                                    if (array.length() == 0)
+                                    {
+                                        Log.d("AAA", "No results");
+                                    }
+                                    else
+                                    {
+                                        for(int i = 0; i < array.length(); i++)
+                                        {
+                                            JSONObject songInfo = array.getJSONObject(i);
+
+                                            int id  = songInfo.getInt("id");
+                                            String title = songInfo.getString("title");
+                                            String link = songInfo.getString("link");
+                                            String preview = songInfo.getString("preview");
+                                            int duration = songInfo.getInt("duration");
+
+                                            JSONObject artist = songInfo.getJSONObject("artist");
+
+                                            int artistID = artist.getInt("id");
+                                            String artistName = artist.getString("name");
+                                            String artistLink = artist.getString("link");
+
+                                            Log.d("AAA", id + " ::: " + title + " ::: " + link + " ::: " + preview + " ::: " + duration + " ::: " + artistID + " ::: " + artistName + " ::: " + artistLink);
+
+                                        }
+                                    }
+                                }
+                                catch(Exception e)
+                                {
+                                    e.printStackTrace();
+                                }
 
                                 /*
                                 try
