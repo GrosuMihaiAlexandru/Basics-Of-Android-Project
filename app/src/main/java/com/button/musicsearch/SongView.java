@@ -17,10 +17,10 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
@@ -34,7 +34,7 @@ public class SongView extends AppCompatActivity
     TextView songNameText;
     TextView artistNameText;
     TextView albumNameText;
-    ImageView albumImageText;
+    ImageView albumImageView;
 
     private final String apiString = "https://api.deezer.com/search?q=";
 
@@ -61,7 +61,7 @@ public class SongView extends AppCompatActivity
         songNameText = findViewById(R.id.songName);
         artistNameText = findViewById(R.id.artistName);
         albumNameText = findViewById(R.id.albumName);
-        albumImageText = findViewById(R.id.imageView);
+        albumImageView = findViewById(R.id.imageView);
 
         // Getting the data from the intent
         Intent intent = getIntent();
@@ -76,6 +76,7 @@ public class SongView extends AppCompatActivity
         albumNameText.setText("Album:" + albumName);
         albumNameText.setMovementMethod(new ScrollingMovementMethod());
         // Loading image
+        Picasso.get().load(albumImage).into(albumImageView);
 
         listView = findViewById(R.id.listView);
 

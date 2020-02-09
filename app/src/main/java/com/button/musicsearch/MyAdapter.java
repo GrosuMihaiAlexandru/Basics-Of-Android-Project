@@ -12,6 +12,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.squareup.picasso.Picasso;
+
 import java.util.ArrayList;
 
 class MyAdapter extends ArrayAdapter<String>
@@ -47,6 +49,7 @@ class MyAdapter extends ArrayAdapter<String>
         songName.setText(rSongName.get(position));
         artistName.setText(rArtistName.get(position));
         albumName.setText(rAlbumName.get(position));
+        Picasso.get().load(rAlbumImage.get(position)).into(albumImage);
 
         // Load Image
 
