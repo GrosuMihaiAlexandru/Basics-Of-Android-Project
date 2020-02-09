@@ -2,10 +2,11 @@ package com.button.musicsearch;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
+import android.view.Window;
 import android.widget.EditText;
 
 import com.android.volley.Request;
@@ -18,7 +19,7 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class MainActivity extends AppCompatActivity
+public class HomeActivity extends AppCompatActivity
 {
     private final String apiString = "https://api.deezer.com/search?q=";
 
@@ -30,8 +31,9 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        searchText = findViewById(R.id.editText);
+        this.getSupportActionBar().hide();
+        setContentView(R.layout.activity_home);
+        searchText = findViewById(R.id.searchText);
     }
 
     public void OnClick(View view)
@@ -39,7 +41,7 @@ public class MainActivity extends AppCompatActivity
         String res = searchText.getText().toString();
         Log.d("AAA", "Searched: " + "\"" + res + "\"");
         final String apiSearch = apiString + res;
-    
+
         requestQueue = Volley.newRequestQueue(this);
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
                 (Request.Method.GET, apiSearch, null,
@@ -85,50 +87,7 @@ public class MainActivity extends AppCompatActivity
                                     e.printStackTrace();
                                 }
 
-                                /*
-                                try
-                                {
-                                    JSONObject lunchMenu = response.getJSONObject("LunchMenu");
-                                    JSONArray setMenus = lunchMenu.getJSONArray("SetMenus");
 
-                                    if (setMenus.length() == 0)
-                                    {
-                                        titles.add("No meal");
-                                    }
-                                    else
-                                    {
-                                        for (int i = 0; i < setMenus.length(); i++)
-                                        {
-
-                                            JSONObject menu = setMenus.getJSONObject(i);
-                                            JSONArray mealArray = menu.getJSONArray("Meals");
-
-                                            for (int j = 0; j < mealArray.length(); j++)
-                                            {
-                                                JSONObject meal = mealArray.getJSONObject(j);
-
-                                                // Adding the info to the arrayLists
-                                                String name = meal.getString("Name");
-                                                titles.add(name);
-                                                Log.d("AAA", "Name: " + name);
-                                                JSONArray diets = meal.getJSONArray("Diets");
-                                                String description = "";
-                                                for (int k = 0; k < diets.length(); k++)
-                                                {
-                                                    description += diets.getString(k);
-                                                }
-                                                Log.d("AAA", "Description: " + description);
-                                                descriptions.add(description);
-                                            }
-                                        }
-                                        adapter.notifyDataSetChanged();
-                                    }
-                                }
-                                catch(Exception e)
-                                {
-                                    e.printStackTrace();
-                                }
-                                */
 
                             }
                         }, new Response.ErrorListener() {
@@ -139,5 +98,17 @@ public class MainActivity extends AppCompatActivity
                     }});
 
         requestQueue.add(jsonObjectRequest);
+    }
+
+    public void OnSearchClick(View view)
+    {
+        Intent intent = new Intent(this, SearchActivity.class);
+        startActivity(intent);
+    }
+
+    public void OnSavedSongsClick(View view)
+    {
+        Intent intent = new Intent(this, SavedSongsActivity.class);
+        startActivity(intent);
     }
 }
