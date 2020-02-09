@@ -121,6 +121,11 @@ public class SearchActivity extends AppCompatActivity
                                     }
                                     else
                                     {
+                                        songNames.clear();
+                                        artistNames.clear();
+                                        albumNames.clear();
+                                        albumImages.clear();
+
                                         for (int i = 0; i < array.length(); i++)
                                         {
                                             JSONObject songInfo = array.getJSONObject(i);
