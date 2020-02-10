@@ -47,6 +47,7 @@ public class SearchActivity extends AppCompatActivity
     ArrayList<String> artistNames = new ArrayList<String>();
     ArrayList<String> albumNames = new ArrayList<String>();
     ArrayList<String> albumImages = new ArrayList<String>();
+    ArrayList<String> songsPreview = new ArrayList<String>();
 
     MyAdapter adapter;
     ListView listView;
@@ -75,6 +76,7 @@ public class SearchActivity extends AppCompatActivity
                 intent.putExtra("artistName", artistNames.get(position));
                 intent.putExtra("albumName", albumNames.get(position));
                 intent.putExtra("albumImage", albumImages.get(position));
+                intent.putExtra("songPreview", songsPreview.get(position));
                 startActivity(intent);
             }
         });
@@ -153,7 +155,7 @@ public class SearchActivity extends AppCompatActivity
                                             artistNames.add(artistName);
                                             albumNames.add(albumName);
                                             albumImages.add(albumImageURL);
-
+                                            songsPreview.add(preview);
                                         }
                                         adapter.notifyDataSetChanged();
                                     }

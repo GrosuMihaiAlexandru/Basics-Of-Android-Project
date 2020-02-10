@@ -1,12 +1,19 @@
 package com.button.musicsearch;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -22,7 +29,10 @@ import com.squareup.picasso.Picasso;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 public class SongView extends AppCompatActivity
 {
@@ -30,6 +40,9 @@ public class SongView extends AppCompatActivity
     private String artistName;
     private String albumName;
     private String albumImage;
+    private String songPreview;
+
+    Context context;
 
     TextView songNameText;
     TextView artistNameText;
@@ -48,12 +61,20 @@ public class SongView extends AppCompatActivity
     ArrayList<String> artistNames = new ArrayList<String>();
     ArrayList<String> albumNames = new ArrayList<String>();
     ArrayList<String> albumImages = new ArrayList<String>();
+    ArrayList<String> songsPreview = new ArrayList<String>();
+
+    MediaPlayer mediaPlayer;
+
+    private ImageButton playButton;
+
+    private int isSongPlaying = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_song_view);
+        context = this;
 
         this.getSupportActionBar().hide();
 
@@ -63,12 +84,15 @@ public class SongView extends AppCompatActivity
         albumNameText = findViewById(R.id.albumName);
         albumImageView = findViewById(R.id.imageView);
 
+        playButton = findViewById(R.id.playButton);
+
         // Getting the data from the intent
         Intent intent = getIntent();
         songName = intent.getStringExtra("songName");
         artistName = intent.getStringExtra("artistName");
         albumName = intent.getStringExtra("albumName");
         albumImage = intent.getStringExtra("albumImage");
+        songPreview = intent.getStringExtra("songPreview");
 
         // Setting the data
         songNameText.setText(songName);
@@ -85,6 +109,17 @@ public class SongView extends AppCompatActivity
 
         listView.setAdapter(adapter);
 
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                Intent intent = new Intent(context, SongView.class);
+                intent.putExtra("songName", songNames.get(position));
+                intent.putExtra("artistName", artistNames.get(position));
+                intent.putExtra("albumName", albumNames.get(position));
+                intent.putExtra("albumImage", albumImages.get(position));
+                startActivity(intent);
+            }
+        });
 
         // Searching for other songs
         SearchOtherSongs(albumName);
@@ -142,6 +177,7 @@ public class SongView extends AppCompatActivity
                                             artistNames.add("By " + artistName);
                                             albumNames.add(albumName);
                                             albumImages.add(albumImageURL);
+                                            songsPreview.add(preview);
                                         }
                                         adapter.notifyDataSetChanged();
 
@@ -170,5 +206,65 @@ public class SongView extends AppCompatActivity
     public void onBackClick(View view)
     {
         finish();
+    }
+
+    public void OnPlayClick(View view)
+    {
+        if (isSongPlaying == 0)
+        {
+            try
+            {
+                mediaPlayer = new MediaPlayer();
+                mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                mediaPlayer.setDataSource(songPreview);
+                mediaPlayer.prepare(); // might take long! (for buffering, etc)
+                mediaPlayer.start();
+                isSongPlaying = 1;
+                int icon = R.drawable.ic_pause_circle_outline_24px;
+                playButton.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), icon));
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+
+        }
+        else if (isSongPlaying == 1)
+        {
+            isSongPlaying = 2;
+            mediaPlayer.pause();
+            int icon = R.drawable.ic_play_circle_outline_24px;
+            playButton.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), icon));
+        }
+        else
+        {
+            isSongPlaying = 1;
+            mediaPlayer.start();
+            int icon = R.drawable.ic_pause_circle_outline_24px;
+            playButton.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), icon));
+        }
+
+    }
+
+    public void OnSaveClick(View view)
+    {
+        SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+
+        HomeActivity.savedSongNames.add(songName);
+        HomeActivity.savedArtistNames.add(artistName);
+        HomeActivity.savedAlbumNames.add(albumName);
+        HomeActivity.savedAlbumImages.add(albumImage);
+        HomeActivity.savedSongsPreview.add(songPreview);
+
+        editor.clear();
+
+        editor.putStringSet("songNames", HomeActivity.savedSongNames);
+        editor.putStringSet("songArtists", HomeActivity.savedArtistNames);
+        editor.putStringSet("albumNames", HomeActivity.savedAlbumNames);
+        editor.putStringSet("albumImages", HomeActivity.savedAlbumImages);
+        editor.putStringSet("songsPreview", HomeActivity.savedSongsPreview);
+
+        editor.commit();
     }
 }

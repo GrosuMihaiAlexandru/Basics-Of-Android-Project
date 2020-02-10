@@ -2,7 +2,9 @@ package com.button.musicsearch;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -19,6 +21,10 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+
 public class HomeActivity extends AppCompatActivity
 {
     private final String apiString = "https://api.deezer.com/search?q=";
@@ -27,6 +33,13 @@ public class HomeActivity extends AppCompatActivity
 
     private EditText searchText;
 
+    // Data about all saved songs
+    public static Set<String> savedSongNames = new HashSet<String>();
+    public static Set<String> savedArtistNames = new HashSet<String>();
+    public static Set<String> savedAlbumNames = new HashSet<String>();
+    public static Set<String> savedAlbumImages = new HashSet<String>();
+    public static Set<String> savedSongsPreview = new HashSet<String>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -34,6 +47,21 @@ public class HomeActivity extends AppCompatActivity
         this.getSupportActionBar().hide();
         setContentView(R.layout.activity_home);
         searchText = findViewById(R.id.searchText);
+
+
+        SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
+        savedSongNames.clear();
+        savedSongNames = sharedPref.getStringSet("songNames", new HashSet<String>());
+        savedArtistNames.clear();
+        savedArtistNames = sharedPref.getStringSet("songArtists", new HashSet<String>());
+        savedAlbumNames.clear();
+        savedAlbumNames = sharedPref.getStringSet("albumNames", new HashSet<String>());
+        savedAlbumImages.clear();
+        savedAlbumImages = sharedPref.getStringSet("albumImages", new HashSet<String>());
+        savedSongsPreview.clear();
+        savedSongsPreview = sharedPref.getStringSet("songsPreview", new HashSet<String>());
+
+        Log.d("AAA", savedSongNames.toString());
     }
 
     public void OnClick(View view)
@@ -104,11 +132,13 @@ public class HomeActivity extends AppCompatActivity
     {
         Intent intent = new Intent(this, SearchActivity.class);
         startActivity(intent);
+        finish();
     }
 
     public void OnSavedSongsClick(View view)
     {
         Intent intent = new Intent(this, SavedSongsActivity.class);
         startActivity(intent);
+        finish();
     }
 }
