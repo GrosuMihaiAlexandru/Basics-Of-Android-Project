@@ -134,7 +134,7 @@ public class SongView extends AppCompatActivity
             }
         });
 
-        sharedPref = getApplicationContext().getSharedPreferences("Pulla9", Context.MODE_PRIVATE);
+        sharedPref = getApplicationContext().getSharedPreferences("Pulla12", Context.MODE_PRIVATE);
 
         // Searching for other songs
         SearchOtherSongs(albumName);
@@ -287,18 +287,33 @@ public class SongView extends AppCompatActivity
 
         HomeActivity.savedSongNames.add(songName);
         HomeActivity.savedArtistNames.add(artistName);
-        Log.d("CCC", albumName);
         HomeActivity.savedAlbumNames.add(albumName);
         HomeActivity.savedAlbumImages.add(albumImage);
         HomeActivity.savedSongsPreview.add(songPreview);
 
         editor.clear();
 
-        editor.putStringSet("songNames", HomeActivity.savedSongNames);
-        editor.putStringSet("artistNames", HomeActivity.savedArtistNames);
-        editor.putStringSet("albumNames", HomeActivity.savedAlbumNames);
-        editor.putStringSet("albumImages", HomeActivity.savedAlbumImages);
-        editor.putStringSet("songsPreview", HomeActivity.savedSongsPreview);
+        HashSet<String> savedSongNamesHash = new HashSet<String>();
+        HashSet<String> savedArtistNamesHash = new HashSet<String>();
+        HashSet<String> savedAlbumNamesHash = new HashSet<String>();
+        HashSet<String> savedAlbumImagesHash = new HashSet<String>();
+        HashSet<String> savedSongsPreviewHash = new HashSet<String>();
+        for (int i = 0; i < HomeActivity.savedSongNames.size(); i++)
+        {
+            savedSongNamesHash.add("" + (1000000 + i) + HomeActivity.savedSongNames.get(i));
+            savedArtistNamesHash.add("" + (1000000 + i) + HomeActivity.savedArtistNames.get(i));
+            savedAlbumNamesHash.add("" + (1000000 + i) + HomeActivity.savedAlbumNames.get(i));
+            savedAlbumImagesHash.add("" + (1000000 + i) + HomeActivity.savedAlbumImages.get(i));
+            savedSongsPreviewHash.add("" + (1000000 + i) + HomeActivity.savedSongsPreview.get(i));
+        }
+
+        Log.d("DDD", savedSongNamesHash.toString());
+
+        editor.putStringSet("songNames", savedSongNamesHash);
+        editor.putStringSet("artistNames", savedArtistNamesHash);
+        editor.putStringSet("albumNames", savedAlbumNamesHash);
+        editor.putStringSet("albumImages", savedAlbumImagesHash);
+        editor.putStringSet("songsPreview", savedSongsPreviewHash);
 
         editor.commit();
 

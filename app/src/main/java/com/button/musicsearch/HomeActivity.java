@@ -27,6 +27,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class HomeActivity extends AppCompatActivity
@@ -40,11 +41,11 @@ public class HomeActivity extends AppCompatActivity
     SharedPreferences sharedPref;
 
     // Data about all saved songs
-    public static Set<String> savedSongNames = new HashSet<String>();
-    public static Set<String> savedArtistNames = new HashSet<String>();
-    public static Set<String> savedAlbumNames = new HashSet<String>();
-    public static Set<String> savedAlbumImages = new HashSet<String>();
-    public static Set<String> savedSongsPreview = new HashSet<String>();
+    public static ArrayList<String> savedSongNames = new ArrayList<String>();
+    public static ArrayList<String> savedArtistNames = new ArrayList<String>();
+    public static ArrayList<String> savedAlbumNames = new ArrayList<String>();
+    public static ArrayList<String> savedAlbumImages = new ArrayList<String>();
+    public static ArrayList<String> savedSongsPreview = new ArrayList<String>();
 
     private ArrayList<String> recommendedSongNames = new ArrayList<String>();
     private ArrayList<String> recommendedArtistNames = new ArrayList<String>();
@@ -67,19 +68,40 @@ public class HomeActivity extends AppCompatActivity
 
         context = this;
 
-        sharedPref = getApplicationContext().getSharedPreferences("Pulla9", Context.MODE_PRIVATE);
+        sharedPref = getApplicationContext().getSharedPreferences("Pulla12", Context.MODE_PRIVATE);
 
         //Log.d("AAA", sharedPref.getStringSet("songNames", new HashSet<String>()).toString());
 
-        savedSongNames = new HashSet<String>(sharedPref.getStringSet("songNames", new HashSet<String>()));
-        savedArtistNames = new HashSet<String>(sharedPref.getStringSet("artistNames", new HashSet<String>()));
-        savedAlbumNames = new HashSet<String>(sharedPref.getStringSet("albumNames", new HashSet<String>()));
-        savedAlbumImages = new HashSet<String>(sharedPref.getStringSet("albumImages", new HashSet<String>()));
-        savedSongsPreview = new HashSet<String>(sharedPref.getStringSet("songsPreview", new HashSet<String>()));
+        savedSongNames = new ArrayList<String>(sharedPref.getStringSet("songNames", new HashSet<String>()));
+        savedArtistNames = new ArrayList<String>(sharedPref.getStringSet("artistNames", new HashSet<String>()));
+        savedAlbumNames = new ArrayList<String>(sharedPref.getStringSet("albumNames", new HashSet<String>()));
+        savedAlbumImages = new ArrayList<String>(sharedPref.getStringSet("albumImages", new HashSet<String>()));
+        savedSongsPreview = new ArrayList<String>(sharedPref.getStringSet("songsPreview", new HashSet<String>()));
+
+        Collections.sort(savedSongNames);
+        Collections.sort(savedArtistNames);
+        Collections.sort(savedAlbumNames);
+        Collections.sort(savedAlbumImages);
+        Collections.sort(savedSongsPreview);
+
+        for(int i = 0; i < savedSongNames.size(); i++)
+        {
+            savedSongNames.set(i, savedSongNames.get(i).substring(7, savedSongNames.get(i).length()));
+            savedArtistNames.set(i, savedArtistNames.get(i).substring(7, savedArtistNames.get(i).length()));
+            savedAlbumNames.set(i, savedAlbumNames.get(i).substring(7, savedAlbumNames.get(i).length()));
+            savedAlbumImages.set(i, savedAlbumImages.get(i).substring(7, savedAlbumImages.get(i).length()));
+            savedSongsPreview.set(i, savedSongsPreview.get(i).substring(7, savedSongsPreview.get(i).length()));
+        }
+
+        Log.d("DDD", savedSongNames.toString());
 
         if (savedSongNames.size() == 0)
         {
-
+            recommendedSongNames.add("List empty");
+            recommendedArtistNames.add("Favorite new songs in Search");
+            recommendedAlbumNames.add("");
+            recommendedAlbumImages.add("");
+            recommendedSongsPreview.add("");
         }
         else if (savedSongNames.size() < 5)
         {
@@ -95,16 +117,15 @@ public class HomeActivity extends AppCompatActivity
                 list.add(new Integer(i));
             }
             Collections.shuffle(list);
-            for (int i = 0; i < 3; i++) {
+            for (int i = 0; i < 5; i++) {
                 System.out.println(list.get(i));
 
-                recommendedSongNames.add(new ArrayList<String>(savedSongNames).get(i));
-                recommendedArtistNames.add(new ArrayList<String>(savedArtistNames).get(i));
-                recommendedAlbumNames.add(new ArrayList<String>(savedAlbumNames).get(i));
-                recommendedAlbumImages.add(new ArrayList<String>(savedAlbumImages).get(i));
-                recommendedSongsPreview.add(new ArrayList<String>(savedSongsPreview).get(i));
+                recommendedSongNames.add(new ArrayList<String>(savedSongNames).get(list.get(i)));
+                recommendedArtistNames.add(new ArrayList<String>(savedArtistNames).get(list.get(i)));
+                recommendedAlbumNames.add(new ArrayList<String>(savedAlbumNames).get(list.get(i)));
+                recommendedAlbumImages.add(new ArrayList<String>(savedAlbumImages).get(list.get(i)));
+                recommendedSongsPreview.add(new ArrayList<String>(savedSongsPreview).get(list.get(i)));
             }
-
         }
 
         adapter = new MyAdapter(this, recommendedSongNames, recommendedArtistNames, recommendedAlbumNames, recommendedAlbumImages);
