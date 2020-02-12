@@ -68,10 +68,18 @@ public class HomeActivity extends AppCompatActivity
 
         context = this;
 
-        sharedPref = getApplicationContext().getSharedPreferences("Pulla12", Context.MODE_PRIVATE);
+        sharedPref = getApplicationContext().getSharedPreferences("Pulla14", Context.MODE_PRIVATE);
+    }
 
-        //Log.d("AAA", sharedPref.getStringSet("songNames", new HashSet<String>()).toString());
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
+        LoadSavedSongs();
+    }
 
+    private void LoadSavedSongs()
+    {
         savedSongNames = new ArrayList<String>(sharedPref.getStringSet("songNames", new HashSet<String>()));
         savedArtistNames = new ArrayList<String>(sharedPref.getStringSet("artistNames", new HashSet<String>()));
         savedAlbumNames = new ArrayList<String>(sharedPref.getStringSet("albumNames", new HashSet<String>()));
@@ -97,11 +105,18 @@ public class HomeActivity extends AppCompatActivity
 
         if (savedSongNames.size() == 0)
         {
+            /*
             recommendedSongNames.add("List empty");
             recommendedArtistNames.add("Favorite new songs in Search");
             recommendedAlbumNames.add("");
             recommendedAlbumImages.add("");
             recommendedSongsPreview.add("");
+            */
+            recommendedSongNames = new ArrayList<String>();
+            recommendedArtistNames = new ArrayList<String>();
+            recommendedAlbumNames = new ArrayList<String>();
+            recommendedAlbumImages = new ArrayList<String>();
+            recommendedSongsPreview = new ArrayList<String>();
         }
         else if (savedSongNames.size() < 5)
         {

@@ -70,8 +70,11 @@ public class SongView extends AppCompatActivity
     SharedPreferences sharedPref;
 
     private ImageButton playButton;
+    private ImageButton saveButton;
 
     private int isSongPlaying = 0;
+
+    private boolean isFavorite;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -89,6 +92,7 @@ public class SongView extends AppCompatActivity
         albumImageView = findViewById(R.id.imageView);
 
         playButton = findViewById(R.id.playButton);
+        saveButton = findViewById(R.id.saveButton);
 
         // Getting the data from the intent
         Intent intent = getIntent();
@@ -134,10 +138,29 @@ public class SongView extends AppCompatActivity
             }
         });
 
-        sharedPref = getApplicationContext().getSharedPreferences("Pulla12", Context.MODE_PRIVATE);
+
+        isFavorite = HomeActivity.savedSongsPreview.contains(songPreview);
+        UpdateButton();
+        //Log.d("CCC", isFavorite ? "true" : "false");
+
+        sharedPref = getApplicationContext().getSharedPreferences("Pulla14", Context.MODE_PRIVATE);
 
         // Searching for other songs
         SearchOtherSongs(albumName);
+    }
+
+    void UpdateButton()
+    {
+        if (isFavorite)
+        {
+            int icon = R.drawable.ic_star_24px;
+            saveButton.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), icon));
+        }
+        else
+        {
+            int icon = R.drawable.ic_star_border_24px;
+            saveButton.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), icon));
+        }
     }
 
     protected void onResume()
@@ -283,40 +306,80 @@ public class SongView extends AppCompatActivity
 
     public void OnSaveClick(View view)
     {
-        SharedPreferences.Editor editor = sharedPref.edit();
+        if (!isFavorite) {
+            SharedPreferences.Editor editor = sharedPref.edit();
 
-        HomeActivity.savedSongNames.add(songName);
-        HomeActivity.savedArtistNames.add(artistName);
-        HomeActivity.savedAlbumNames.add(albumName);
-        HomeActivity.savedAlbumImages.add(albumImage);
-        HomeActivity.savedSongsPreview.add(songPreview);
+            HomeActivity.savedSongNames.add(songName);
+            HomeActivity.savedArtistNames.add(artistName);
+            HomeActivity.savedAlbumNames.add(albumName);
+            HomeActivity.savedAlbumImages.add(albumImage);
+            HomeActivity.savedSongsPreview.add(songPreview);
 
-        editor.clear();
+            editor.clear();
 
-        HashSet<String> savedSongNamesHash = new HashSet<String>();
-        HashSet<String> savedArtistNamesHash = new HashSet<String>();
-        HashSet<String> savedAlbumNamesHash = new HashSet<String>();
-        HashSet<String> savedAlbumImagesHash = new HashSet<String>();
-        HashSet<String> savedSongsPreviewHash = new HashSet<String>();
-        for (int i = 0; i < HomeActivity.savedSongNames.size(); i++)
+            HashSet<String> savedSongNamesHash = new HashSet<String>();
+            HashSet<String> savedArtistNamesHash = new HashSet<String>();
+            HashSet<String> savedAlbumNamesHash = new HashSet<String>();
+            HashSet<String> savedAlbumImagesHash = new HashSet<String>();
+            HashSet<String> savedSongsPreviewHash = new HashSet<String>();
+            for (int i = 0; i < HomeActivity.savedSongNames.size(); i++) {
+                savedSongNamesHash.add("" + (1000000 + i) + HomeActivity.savedSongNames.get(i));
+                savedArtistNamesHash.add("" + (1000000 + i) + HomeActivity.savedArtistNames.get(i));
+                savedAlbumNamesHash.add("" + (1000000 + i) + HomeActivity.savedAlbumNames.get(i));
+                savedAlbumImagesHash.add("" + (1000000 + i) + HomeActivity.savedAlbumImages.get(i));
+                savedSongsPreviewHash.add("" + (1000000 + i) + HomeActivity.savedSongsPreview.get(i));
+            }
+
+            Log.d("DDD", savedSongNamesHash.toString());
+
+            editor.putStringSet("songNames", savedSongNamesHash);
+            editor.putStringSet("artistNames", savedArtistNamesHash);
+            editor.putStringSet("albumNames", savedAlbumNamesHash);
+            editor.putStringSet("albumImages", savedAlbumImagesHash);
+            editor.putStringSet("songsPreview", savedSongsPreviewHash);
+
+            editor.commit();
+
+            isFavorite = true;
+        }
+        else // isFavorite
         {
-            savedSongNamesHash.add("" + (1000000 + i) + HomeActivity.savedSongNames.get(i));
-            savedArtistNamesHash.add("" + (1000000 + i) + HomeActivity.savedArtistNames.get(i));
-            savedAlbumNamesHash.add("" + (1000000 + i) + HomeActivity.savedAlbumNames.get(i));
-            savedAlbumImagesHash.add("" + (1000000 + i) + HomeActivity.savedAlbumImages.get(i));
-            savedSongsPreviewHash.add("" + (1000000 + i) + HomeActivity.savedSongsPreview.get(i));
+            SharedPreferences.Editor editor = sharedPref.edit();
+
+            HomeActivity.savedSongNames.remove(songName);
+            HomeActivity.savedArtistNames.remove(artistName);
+            HomeActivity.savedAlbumNames.remove(albumName);
+            HomeActivity.savedAlbumImages.remove(albumImage);
+            HomeActivity.savedSongsPreview.remove(songPreview);
+
+            editor.clear();
+
+            HashSet<String> savedSongNamesHash = new HashSet<String>();
+            HashSet<String> savedArtistNamesHash = new HashSet<String>();
+            HashSet<String> savedAlbumNamesHash = new HashSet<String>();
+            HashSet<String> savedAlbumImagesHash = new HashSet<String>();
+            HashSet<String> savedSongsPreviewHash = new HashSet<String>();
+            for (int i = 0; i < HomeActivity.savedSongNames.size(); i++) {
+                savedSongNamesHash.add("" + (1000000 + i) + HomeActivity.savedSongNames.get(i));
+                savedArtistNamesHash.add("" + (1000000 + i) + HomeActivity.savedArtistNames.get(i));
+                savedAlbumNamesHash.add("" + (1000000 + i) + HomeActivity.savedAlbumNames.get(i));
+                savedAlbumImagesHash.add("" + (1000000 + i) + HomeActivity.savedAlbumImages.get(i));
+                savedSongsPreviewHash.add("" + (1000000 + i) + HomeActivity.savedSongsPreview.get(i));
+            }
+
+            Log.d("DDD", savedSongNamesHash.toString());
+
+            editor.putStringSet("songNames", savedSongNamesHash);
+            editor.putStringSet("artistNames", savedArtistNamesHash);
+            editor.putStringSet("albumNames", savedAlbumNamesHash);
+            editor.putStringSet("albumImages", savedAlbumImagesHash);
+            editor.putStringSet("songsPreview", savedSongsPreviewHash);
+
+            editor.commit();
+
+            isFavorite = false;
         }
 
-        Log.d("DDD", savedSongNamesHash.toString());
-
-        editor.putStringSet("songNames", savedSongNamesHash);
-        editor.putStringSet("artistNames", savedArtistNamesHash);
-        editor.putStringSet("albumNames", savedAlbumNamesHash);
-        editor.putStringSet("albumImages", savedAlbumImagesHash);
-        editor.putStringSet("songsPreview", savedSongsPreviewHash);
-
-        editor.commit();
-
-
+        UpdateButton();
     }
 }
