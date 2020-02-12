@@ -1,6 +1,7 @@
 package com.button.musicsearch;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import android.content.Context;
 import android.content.Intent;
@@ -9,7 +10,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
+import android.widget.AdapterView;
 import android.widget.EditText;
+import android.widget.ListView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -22,6 +25,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -42,6 +46,16 @@ public class HomeActivity extends AppCompatActivity
     public static Set<String> savedAlbumImages = new HashSet<String>();
     public static Set<String> savedSongsPreview = new HashSet<String>();
 
+    private ArrayList<String> recommendedSongNames = new ArrayList<String>();
+    private ArrayList<String> recommendedArtistNames = new ArrayList<String>();
+    private ArrayList<String> recommendedAlbumNames = new ArrayList<String>();
+    private ArrayList<String> recommendedAlbumImages = new ArrayList<String>();
+    private ArrayList<String> recommendedSongsPreview = new ArrayList<String>();
+
+    private MyAdapter adapter;
+    private ListView listView;
+    private Context context;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -49,18 +63,66 @@ public class HomeActivity extends AppCompatActivity
         this.getSupportActionBar().hide();
         setContentView(R.layout.activity_home);
         searchText = findViewById(R.id.searchText);
+        listView = findViewById(R.id.listView);
 
-        sharedPref = getApplicationContext().getSharedPreferences("Pulla", Context.MODE_PRIVATE);
+        context = this;
+
+        sharedPref = getApplicationContext().getSharedPreferences("Pulla9", Context.MODE_PRIVATE);
 
         //Log.d("AAA", sharedPref.getStringSet("songNames", new HashSet<String>()).toString());
 
         savedSongNames = new HashSet<String>(sharedPref.getStringSet("songNames", new HashSet<String>()));
-        savedArtistNames = new HashSet<String>(sharedPref.getStringSet("songArtists", new HashSet<String>()));
+        savedArtistNames = new HashSet<String>(sharedPref.getStringSet("artistNames", new HashSet<String>()));
         savedAlbumNames = new HashSet<String>(sharedPref.getStringSet("albumNames", new HashSet<String>()));
         savedAlbumImages = new HashSet<String>(sharedPref.getStringSet("albumImages", new HashSet<String>()));
         savedSongsPreview = new HashSet<String>(sharedPref.getStringSet("songsPreview", new HashSet<String>()));
 
-        Log.d("AAA", savedSongNames.toString());
+        if (savedSongNames.size() == 0)
+        {
+
+        }
+        else if (savedSongNames.size() < 5)
+        {
+            recommendedSongNames = new ArrayList<String>(savedSongNames);
+            recommendedArtistNames = new ArrayList<String>(savedArtistNames);
+            recommendedAlbumNames = new ArrayList<String>(savedAlbumNames);
+            recommendedAlbumImages = new ArrayList<String>(savedAlbumImages);
+            recommendedSongsPreview = new ArrayList<String>(savedSongsPreview);
+        }
+        else {
+            ArrayList<Integer> list = new ArrayList<Integer>();
+            for (int i = 1; i < savedSongNames.size(); i++) {
+                list.add(new Integer(i));
+            }
+            Collections.shuffle(list);
+            for (int i = 0; i < 3; i++) {
+                System.out.println(list.get(i));
+
+                recommendedSongNames.add(new ArrayList<String>(savedSongNames).get(i));
+                recommendedArtistNames.add(new ArrayList<String>(savedArtistNames).get(i));
+                recommendedAlbumNames.add(new ArrayList<String>(savedAlbumNames).get(i));
+                recommendedAlbumImages.add(new ArrayList<String>(savedAlbumImages).get(i));
+                recommendedSongsPreview.add(new ArrayList<String>(savedSongsPreview).get(i));
+            }
+
+        }
+
+        adapter = new MyAdapter(this, recommendedSongNames, recommendedArtistNames, recommendedAlbumNames, recommendedAlbumImages);
+
+        listView.setAdapter(adapter);
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                Intent intent = new Intent(context, SongView.class);
+                intent.putExtra("songName", recommendedSongNames.get(position));
+                intent.putExtra("artistName", recommendedArtistNames.get(position));
+                intent.putExtra("albumName", recommendedAlbumNames.get(position));
+                intent.putExtra("albumImage", recommendedAlbumImages.get(position));
+                intent.putExtra("songPreview", recommendedSongsPreview.get(position));
+                startActivity(intent);
+            }
+        });
     }
 
     public void OnClick(View view)

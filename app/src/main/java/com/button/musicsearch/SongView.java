@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
@@ -133,7 +134,7 @@ public class SongView extends AppCompatActivity
             }
         });
 
-        sharedPref = getApplicationContext().getSharedPreferences("Pulla", Context.MODE_PRIVATE);
+        sharedPref = getApplicationContext().getSharedPreferences("Pulla9", Context.MODE_PRIVATE);
 
         // Searching for other songs
         SearchOtherSongs(albumName);
@@ -286,6 +287,7 @@ public class SongView extends AppCompatActivity
 
         HomeActivity.savedSongNames.add(songName);
         HomeActivity.savedArtistNames.add(artistName);
+        Log.d("CCC", albumName);
         HomeActivity.savedAlbumNames.add(albumName);
         HomeActivity.savedAlbumImages.add(albumImage);
         HomeActivity.savedSongsPreview.add(songPreview);
