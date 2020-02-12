@@ -2,6 +2,7 @@ package com.button.musicsearch;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.SharedPreferencesCompat;
 
 import android.content.Context;
 import android.content.Intent;
@@ -65,6 +66,8 @@ public class SongView extends AppCompatActivity
 
     MediaPlayer mediaPlayer;
 
+    SharedPreferences sharedPref;
+
     private ImageButton playButton;
 
     private int isSongPlaying = 0;
@@ -112,17 +115,49 @@ public class SongView extends AppCompatActivity
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+
+                if (isSongPlaying != 0)
+                {
+                    //mediaPlayer.stop();
+
+                    int icon = R.drawable.ic_play_circle_outline_24px;
+                    playButton.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), icon));
+                }
                 Intent intent = new Intent(context, SongView.class);
                 intent.putExtra("songName", songNames.get(position));
                 intent.putExtra("artistName", artistNames.get(position));
                 intent.putExtra("albumName", albumNames.get(position));
                 intent.putExtra("albumImage", albumImages.get(position));
+                intent.putExtra("songPreview", songsPreview.get(position));
                 startActivity(intent);
             }
         });
 
+        sharedPref = getApplicationContext().getSharedPreferences("Pulla", Context.MODE_PRIVATE);
+
         // Searching for other songs
         SearchOtherSongs(albumName);
+    }
+
+    protected void onResume()
+    {
+        super.onResume();
+        isSongPlaying = 0;
+
+        mediaPlayer = new MediaPlayer();
+        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+    }
+
+    protected  void onPause()
+    {
+        super.onPause();
+        if (mediaPlayer != null)
+        {
+            mediaPlayer.stop();
+        }
+
+        int icon = R.drawable.ic_play_circle_outline_24px;
+        playButton.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), icon));
     }
 
     private void SearchOtherSongs(String res)
@@ -214,8 +249,7 @@ public class SongView extends AppCompatActivity
         {
             try
             {
-                mediaPlayer = new MediaPlayer();
-                mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+
                 mediaPlayer.setDataSource(songPreview);
                 mediaPlayer.prepare(); // might take long! (for buffering, etc)
                 mediaPlayer.start();
@@ -223,7 +257,7 @@ public class SongView extends AppCompatActivity
                 int icon = R.drawable.ic_pause_circle_outline_24px;
                 playButton.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), icon));
             }
-            catch (IOException e)
+            catch (Exception e)
             {
                 e.printStackTrace();
             }
@@ -248,7 +282,6 @@ public class SongView extends AppCompatActivity
 
     public void OnSaveClick(View view)
     {
-        SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
 
         HomeActivity.savedSongNames.add(songName);
@@ -260,11 +293,13 @@ public class SongView extends AppCompatActivity
         editor.clear();
 
         editor.putStringSet("songNames", HomeActivity.savedSongNames);
-        editor.putStringSet("songArtists", HomeActivity.savedArtistNames);
+        editor.putStringSet("artistNames", HomeActivity.savedArtistNames);
         editor.putStringSet("albumNames", HomeActivity.savedAlbumNames);
         editor.putStringSet("albumImages", HomeActivity.savedAlbumImages);
         editor.putStringSet("songsPreview", HomeActivity.savedSongsPreview);
 
         editor.commit();
+
+
     }
 }

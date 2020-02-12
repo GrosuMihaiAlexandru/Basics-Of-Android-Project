@@ -33,6 +33,8 @@ public class HomeActivity extends AppCompatActivity
 
     private EditText searchText;
 
+    SharedPreferences sharedPref;
+
     // Data about all saved songs
     public static Set<String> savedSongNames = new HashSet<String>();
     public static Set<String> savedArtistNames = new HashSet<String>();
@@ -48,18 +50,15 @@ public class HomeActivity extends AppCompatActivity
         setContentView(R.layout.activity_home);
         searchText = findViewById(R.id.searchText);
 
+        sharedPref = getApplicationContext().getSharedPreferences("Pulla", Context.MODE_PRIVATE);
 
-        SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
-        savedSongNames.clear();
-        savedSongNames = sharedPref.getStringSet("songNames", new HashSet<String>());
-        savedArtistNames.clear();
-        savedArtistNames = sharedPref.getStringSet("songArtists", new HashSet<String>());
-        savedAlbumNames.clear();
-        savedAlbumNames = sharedPref.getStringSet("albumNames", new HashSet<String>());
-        savedAlbumImages.clear();
-        savedAlbumImages = sharedPref.getStringSet("albumImages", new HashSet<String>());
-        savedSongsPreview.clear();
-        savedSongsPreview = sharedPref.getStringSet("songsPreview", new HashSet<String>());
+        //Log.d("AAA", sharedPref.getStringSet("songNames", new HashSet<String>()).toString());
+
+        savedSongNames = new HashSet<String>(sharedPref.getStringSet("songNames", new HashSet<String>()));
+        savedArtistNames = new HashSet<String>(sharedPref.getStringSet("songArtists", new HashSet<String>()));
+        savedAlbumNames = new HashSet<String>(sharedPref.getStringSet("albumNames", new HashSet<String>()));
+        savedAlbumImages = new HashSet<String>(sharedPref.getStringSet("albumImages", new HashSet<String>()));
+        savedSongsPreview = new HashSet<String>(sharedPref.getStringSet("songsPreview", new HashSet<String>()));
 
         Log.d("AAA", savedSongNames.toString());
     }
